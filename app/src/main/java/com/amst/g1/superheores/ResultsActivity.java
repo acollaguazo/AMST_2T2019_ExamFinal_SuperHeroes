@@ -5,38 +5,59 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class ResultsActivity extends AppCompatActivity {
 
     private String superHeroName;
+    private TextView txtResultsCount;
     private Context mContext = this;
     public static String SUPER_NAME = "SUPER_NAME";
+    private LinearLayout llHeroes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_results);
+        txtResultsCount = findViewById(R.id.tvResultsCount);
+        llHeroes = findViewById(R.id.llResultsContainer);
         superHeroName = getIntent().getStringExtra(SUPER_NAME);
         searchHeroe();
     }
 
     private void searchHeroe() {
         String url = String.format("%s%s/search/%s", Api.BASE_URL, Api.API_TOKEN, superHeroName);
-        JsonArrayRequest heroesRequest = new JsonArrayRequest(url, new Response.Listener<JSONArray>() {
+
+        JsonObjectRequest heroesRequest = new JsonObjectRequest(url, null ,
+                new Response.Listener<JSONObject>() {
             @Override
-            public void onResponse(JSONArray response) {
+            public void onResponse(JSONObject response) {
                 try {
-                    Log.v("RESPONSE", response.toString());
-                    for (int i=0; i<response.length(); i++) {
-//                        JSONObject hero = JSONObject() response.get(i);
-                        Log.v("RESPONSE", response.get(i).toString());
+                    JSONArray results = response.getJSONArray("results");
+                    txtResultsCount.append(String.format(" %d", results.length()));
+                    for (int i=0; i<results.length(); i++) {
+                        JSONObject hero = results.getJSONObject(i);
+                        TextView tvHeroName = new TextView(mContext);
+                        tvHeroName.setTextSize(TypedValue.COMPLEX_UNIT_SP,20);
+                        tvHeroName.setText(hero.getString("name"));
+                        tvHeroName.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+//                                Intent intent = new Intent(mContext);
+                            }
+                        });
+                        llHeroes.addView(tvHeroName);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

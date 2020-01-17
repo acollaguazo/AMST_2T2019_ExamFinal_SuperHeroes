@@ -10,9 +10,9 @@
         android:id="@+id/tvResultsCount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:textSize="25sp"
+        android:layout_marginTop="16dp"
         android:text="@string/results"
+        android:textSize="25sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -30,6 +30,8 @@
             android:id="@+id/llResultsContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
             android:orientation="vertical" />
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
