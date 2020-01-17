@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">SuperHeores</string>
+    <string name="app_name">Super Heroes</string>
+    <string name="results">Resultados:</string>
 </resources>
