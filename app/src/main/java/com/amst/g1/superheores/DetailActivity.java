@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -11,8 +12,18 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
+import com.github.mikephil.charting.utils.ColorTemplate;
 
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.concurrent.BrokenBarrierException;
 
 public class DetailActivity extends AppCompatActivity {
 
@@ -20,6 +31,7 @@ public class DetailActivity extends AppCompatActivity {
     private TextView tvHeroName, tvRealName;
     private int heroId;
     private Context mContext = this;
+    private BarChart barChart;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +40,7 @@ public class DetailActivity extends AppCompatActivity {
         heroId = getIntent().getIntExtra(SUPER_ID, 0);
         tvHeroName = findViewById(R.id.tvHeroName);
         tvRealName = findViewById(R.id.tvRealName);
+        barChart = findViewById(R.id.bcPowerStats);
         getHeroDetails();
     }
 
@@ -44,6 +57,36 @@ public class DetailActivity extends AppCompatActivity {
                        tvHeroName.setText(response.getString("name"));
                        tvRealName.setText(response.getJSONObject("biography")
                                .getString("full-name"));
+
+
+                       JSONObject powerStats = response.getJSONObject("powerstats");
+
+                       ArrayList<IBarDataSet> dataSets = new ArrayList<>();
+                       ArrayList<BarEntry> arrayList = new ArrayList<>();
+
+                       Iterator<String> iter = powerStats.keys();
+                       int c = 0;
+                       while (iter.hasNext()) {
+                           String key = iter.next();
+                           try {
+                               BarEntry barEntry = new BarEntry(0+c, powerStats.getInt(key));
+                               arrayList.add(barEntry);
+                               c += 1;
+                           } catch (Exception e) {
+                               // Something went wrong!
+                           }
+                       }
+
+                       BarDataSet powersDataSet = new BarDataSet(arrayList, "Powers");
+                       powersDataSet.setColors(ColorTemplate.VORDIPLOM_COLORS);
+                       powersDataSet.setDrawValues(true);
+                       dataSets.add(powersDataSet);
+
+                       BarData data = new BarData(dataSets);
+                       barChart.setData(data);
+                       barChart.setFitBars(true);
+                       barChart.invalidate();
+                       barChart.notifyDataSetChanged();
                    } catch (Exception e) {
 
                    }
@@ -57,4 +100,5 @@ public class DetailActivity extends AppCompatActivity {
             Volley.newRequestQueue(mContext).add(objectRequest);
         }
     }
+
 }
