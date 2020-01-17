@@ -3,6 +3,7 @@ package com.amst.g1.superheores;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.TypedValue;
@@ -23,7 +24,7 @@ public class ResultsActivity extends AppCompatActivity {
     private String superHeroName;
     private TextView txtResultsCount;
     private Context mContext = this;
-    public static String SUPER_NAME = "SUPER_NAME";
+    public static final String SUPER_NAME = "SUPER_NAME";
     private LinearLayout llHeroes;
 
     @Override
@@ -47,14 +48,18 @@ public class ResultsActivity extends AppCompatActivity {
                     JSONArray results = response.getJSONArray("results");
                     txtResultsCount.append(String.format(" %d", results.length()));
                     for (int i=0; i<results.length(); i++) {
-                        JSONObject hero = results.getJSONObject(i);
+                        final JSONObject hero = results.getJSONObject(i);
                         TextView tvHeroName = new TextView(mContext);
                         tvHeroName.setTextSize(TypedValue.COMPLEX_UNIT_SP,20);
                         tvHeroName.setText(hero.getString("name"));
                         tvHeroName.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-//                                Intent intent = new Intent(mContext);
+                                try {
+                                    Intent intent = new Intent(mContext, DetailActivity.class);
+                                    intent.putExtra(DetailActivity.SUPER_ID, hero.getInt("id"));
+                                    startActivity(intent);
+                                } catch (Exception ignored) {}
                             }
                         });
                         llHeroes.addView(tvHeroName);
